@@ -30,8 +30,42 @@ function titleClickHandler(event) {
   console.log(targetArticle);
 }
 
-const links = document.querySelectorAll(".titles a");
+const optArticleSelector = ".post",
+  optTitleSelector = ".post-title",
+  optTitleListSelector = ".titles";
 
+function generateTitleLinks() {
+  /* remove contents of titleList */
+  const titleList = document.querySelector(optTitleListSelector);
+  console.log(titleList);
+  // Nie rozumiem po co mam to ukrywac jak za chwile kaza mi to fizycznie wykasowac z htmla
+  titleList.innerHTML = "";
+  /* for each article */
+  const articles = document.querySelectorAll(optArticleSelector);
+  let html = "";
+  for (let article of articles) {
+    console.log(article);
+    /* get the article id */
+    const articleId = article.getAttribute("id");
+    console.log(articleId);
+    /* find the title element */
+    /* get the title from the title element */
+    const articleTitle = article.querySelector(optTitleSelector).textContent;
+    console.log(articleTitle);
+    /* create HTML of the link */
+    //przystepniejsze sie wydaje to podjescie
+    const linkHtml = `<li><a href="#${articleId}">${articleTitle}</a></li>`;
+    console.log(linkHtml);
+    /* insert link into titleList */
+    html = html + linkHtml;
+  }
+  titleList.innerHTML = html;
+  console.log(titleList);
+}
+
+generateTitleLinks();
+
+const links = document.querySelectorAll(".titles a");
 for (let link of links) {
   link.addEventListener("click", titleClickHandler);
 }
