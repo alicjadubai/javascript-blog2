@@ -22,7 +22,7 @@ function titleClickHandler(event) {
   const articleSelector = clickedElement.getAttribute("href");
   console.log(articleSelector);
   /* find the correct article using the selector (value of 'href' attribute) */
-  //articleSelector value is'#article-1' targetArticle id is id=article-1, values not 100% the same, # missing in id value
+
   const targetArticle = document.querySelector(articleSelector);
   console.log(targetArticle);
   /* add class 'active' to the correct article */
@@ -33,6 +33,8 @@ function titleClickHandler(event) {
 const optArticleSelector = ".post",
   optTitleSelector = ".post-title",
   optTitleListSelector = ".titles",
+  customerSelector = "",
+  optArtcieAuthorSelector = ".post .post-author",
   optArticleTagsSelector = ".post-tags .list";
 
 function generateTitleLinks() {
@@ -42,7 +44,9 @@ function generateTitleLinks() {
   // Nie rozumiem po co mam to ukrywac jak za chwile kaza mi to fizycznie wykasowac z htmla
   titleList.innerHTML = "";
   /* for each article */
-  const articles = document.querySelectorAll(optArticleSelector);
+  const articles = document.querySelectorAll(
+    optArticleSelector + customerSelector
+  );
   let html = "";
   for (let article of articles) {
     console.log(article);
@@ -106,3 +110,86 @@ function generateTags() {
 }
 
 generateTags();
+
+//wszystko dziala do tego momentu. co ma na celu to klikniecie w tag?  jak ma zachowac sie przegladarka? ma przeszukac wszystkie artykuly, sprawdzic czy sa tam takie same tagi, jak ten klikniety, i pokazac po lewej stronie zawezona liste artykulow? prosze Cie, zebys mi przeslal mi te fragmenty kodu z Twoimi komentarzami pod okreslonymi linijkami.
+
+function tagClickHandler(event) {
+  /* prevent default action for this event */
+  event.preventDefault();
+  /* make new constant named "clickedElement" and give it the value of "this" */
+  const clickedElement = this;
+  console.log("tag clickedElement", clickedElement);
+  /* make a new constant "href" and read the attribute "href" of the clicked element */
+  const href = clickedElement.getAttribute("href");
+  console.log("taghref", href);
+  /* make a new constant "tag" and extract tag from the "href" constant */
+  const tag = href.replace("#tag-", "");
+  console.log("tag", tag);
+  //ok i co ja robie z tym golym tagiem?
+
+  /* find all tag links with class active */
+  //tutaj nic juz mi nie zwraca, "activetags" sa puste.
+  const activeTags = document.querySelectorAll('a.active[href^="#tag-"]');
+  console.log("active tags:", activeTags);
+  /* START LOOP: for each active tag link */
+  for (let activeTag of activeTags) {
+    console.log("active tag:", activeTag);
+    /* remove class active */
+    activeTag.classList.remove("active");
+  } /* END LOOP: for each active tag link */
+
+  /* find all tag links with "href" attribute equal to the "href" constant */
+  const tagLinks = document.querySelectorAll('a[href="' + href + '"]');
+  console.log("taglinks", tagLinks);
+  /* START LOOP: for each found tag link */
+  for (let tagLink of tagLinks) {
+    /* add class active */
+    tagLink.classList.add("active");
+    console.log("tag link", tagLink);
+  } /* END LOOP: for each found tag link */
+  generateTitleLinks('[data-tags~="' + tag + '"]');
+  /* execute function "generateTitleLinks" with article selector as argument */
+}
+
+function addClickListenersToTags() {
+  /* find all links to tags */
+  const tagLinks = document.querySelectorAll('a[href^="#tag-"]');
+  console.log("listener", tagLinks);
+  /* START LOOP: for each link */
+  for (let tagLink of tagLinks) {
+    /* add tagClickHandler as event listener for that link */
+    tagLink.addEventListener("click", tagClickHandler);
+  } /* END LOOP: for each link */
+}
+
+addClickListenersToTags();
+
+//generate authors. o jakich linkach do autora mowia we wskazowkach. Autora mamy przechwycic z "data-author" i wstawic do <p class="post-author"></p>? gdzie tu jest link? Ostanie polecenie to wykasowanie tego fragmentu kodu <p class="post-author"></p>. to co w takim razie bedzie moim wrapperem? co mam umiescic w zmiennej 'optArtcieAuthorSelector'? co ta funkcja ma na celu? wygenerowanie autora artykulu pod tytulem? czyli handler ma byc przypisany do listy autorow po prawej stronie? jak widzisz, ja w ogole nie rozumiem scenariusza. nie podolam. nie rozumiem tych selektorow
+
+function generateAuthors() {
+  const articles = document.querySelectorAll(optArticleSelector);
+  console.log("authors", articles);
+  let html = "";
+  for (let article of articles) {
+    const authorWrapper = article.querySelector(optArtcieAuthorSelector);
+    console.log(authorWrapper);
+
+    const authorData = article.getAttribute("data-author");
+    console.log(authorData);
+    authorWrapper.innerHTML = html + authorData;
+    console.log(authorWrapper);
+  }
+}
+generateAuthors();
+
+function authorClickHandler(event) {
+  event.preventDefault();
+  const clickedElement = this;
+  console.log("author clickedElement", clickedElement);
+  const href = clickedElement.getAttribute("href");
+  console.log("author href", href);
+
+  //generateTitleLinks('[data-author="' + author + '"]');
+}
+
+addClickListenersToAuthors();
