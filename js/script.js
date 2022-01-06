@@ -188,8 +188,22 @@ function authorClickHandler(event) {
   console.log("author clickedElement", clickedElement);
   const href = clickedElement.getAttribute("href");
   console.log("author href", href);
-
-  //generateTitleLinks('[data-author="' + author + '"]');
+  const author = href.replace("#author-", "");
+  console.log("author", author);
+  const activeAuthorLinks = document.querySelectorAll(
+    'a.active[href^="#author-"]'
+  );
+  for (let activeAuthorLink of activeAuthorLinks) {
+    activeAuthorLinks.classList.remove("active");
+  }
+  const authorLinks = document.querySelectorAll('a[href="' + href + '"]');
+  /* START LOOP: for each found tag link */
+  for (let authorLink of authorLinks) {
+    /* add class active */
+    authorLink.classList.add("active");
+    /* END LOOP: for each found tag link */
+  }
+  generateTitleLinks('[data-author="' + author + '"]');
 }
 function addClickListenersToAthors() {
   /* find all links to auhors */
@@ -199,3 +213,4 @@ function addClickListenersToAthors() {
     authorLink.addEventListener("click", authorClickHandler);
   }
 }
+addClickListenersToAthors();
