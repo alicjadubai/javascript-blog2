@@ -172,12 +172,12 @@ function generateAuthors() {
   let html = "";
   for (let article of articles) {
     const authorWrapper = article.querySelector(optArtcieAuthorSelector);
-    console.log(authorWrapper);
+    console.log("author wrapper", authorWrapper);
 
     const authorData = article.getAttribute("data-author");
-    console.log(authorData);
+    console.log("author data", authorData);
     authorWrapper.innerHTML = html + authorData;
-    console.log(authorWrapper);
+    console.log("author wrapper with html", authorWrapper);
   }
 }
 generateAuthors();
@@ -191,5 +191,11 @@ function authorClickHandler(event) {
 
   //generateTitleLinks('[data-author="' + author + '"]');
 }
-
-addClickListenersToAuthors();
+function addClickListenersToAthors() {
+  /* find all links to auhors */
+  const authorLinks = document.querySelectorAll('a[href^="#author-"]');
+  console.log("author links", authorLinks);
+  for (let authorLink of authorLinks) {
+    authorLink.addEventListener("click", authorClickHandler);
+  }
+}
