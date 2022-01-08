@@ -34,7 +34,7 @@ const optArticleSelector = ".post",
   optTitleSelector = ".post-title",
   optTitleListSelector = ".titles",
   customerSelector = "",
-  optArtcieAuthorSelector = ".post .post-author",
+  optArticleAuthorSelector = ".post .post-author",
   optTagsListSelector = ".tags.list",
   optAuthorsListSelector = ".authors.list",
   optCloudClassCount = 5,
@@ -239,21 +239,52 @@ function calculateAuthorParams(authors) {
 }
 
 function generateAuthors() {
+  /*new*/
+  let allAuthors = {};
   const articles = document.querySelectorAll(optArticleSelector);
   console.log("authors", articles);
   let html = "";
   for (let article of articles) {
-    const authorWrapper = article.querySelector(optArtcieAuthorSelector);
+    const authorWrapper = article.querySelector(optArticleAuthorSelector);
     console.log("author wrapper", authorWrapper);
 
     const authorData = article.getAttribute("data-author");
     console.log("author data", authorData);
     const authorLink = `by <a href="#author-${authorData}"><span>${authorData}</span></a>`;
     console.log("author link", authorLink);
-
+    /*new zlicza mi prawidlowo autorow*/
+    if (!allAuthors[authorData]) {
+      allAuthors[authorData] = 1;
+    } else {
+      allAuthors[authorData]++;
+    }
     authorWrapper.innerHTML = html + authorLink;
     console.log("author wrapper with html", authorWrapper);
   }
+
+  console.log("all authors", allAuthors);
+  /*new*/
+  const authorList = document.querySelectorAll(optAuthorsListSelector);
+  console.log(authorList);
+  /*new*/
+  const authorsParams = calculateAuthorParams(allAuthors);
+  console.log("authors params", authorsParams);
+  /*new*/
+  let allAuthorsHTML = "";
+  /*NEW*/
+  for (let authorData in allAuthors) {
+    allAuthorsHTML +=
+      '<a class="' +
+      calculateTagClass(allAuthors[authorData], authorsParams) +
+      '" href="#author-' +
+      authorData +
+      '">' +
+      authorData +
+      " </a>";
+  }
+  authorList.innerHTML = allAuthorsHTML;
+  //co tu nie gra. nobi w konsoli jest a na stronie sie nie wyswietla
+  console.log("all authors html", allAuthorsHTML);
 }
 generateAuthors();
 
