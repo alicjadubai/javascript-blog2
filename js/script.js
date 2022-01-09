@@ -6,6 +6,9 @@ const templates = {
   tagCloudLink: Handlebars.compile(
     document.querySelector("#template-tag-cloud-link").innerHTML
   ),
+  tagLink: Handlebars.compile(
+    document.querySelector("#template-tag-link").innerHTML
+  ),
 };
 
 function titleClickHandler(event) {
@@ -114,6 +117,44 @@ function calculateTagClass(count, params) {
   return optCloudClassPrefix + classNumber;
 }
 
+function tagClickHandler(event) {
+  /* prevent default action for this event */
+  event.preventDefault();
+  /* make new constant named "clickedElement" and give it the value of "this" */
+  const clickedElement = this;
+  console.log("tag clickedElement", clickedElement);
+  /* make a new constant "href" and read the attribute "href" of the clicked element */
+  const href = clickedElement.getAttribute("href");
+  console.log("taghref", href);
+  /* make a new constant "tag" and extract tag from the "href" constant */
+  const tag = href.replace("#tag-", "");
+  console.log("tag", tag);
+  //ok i co ja robie z tym golym tagiem?
+
+  /* find all tag links with class active */
+
+  const activeTags = document.querySelectorAll('a.active[href^="#tag-"]');
+  console.log("active tags:", activeTags);
+  /* START LOOP: for each active tag link */
+  for (let activeTag of activeTags) {
+    console.log("active tag:", activeTag);
+    /* remove class active */
+    activeTag.classList.remove("active");
+  } /* END LOOP: for each active tag link */
+
+  /* find all tag links with "href" attribute equal to the "href" constant */
+  const tagLinks = document.querySelectorAll('a[href="' + href + '"]');
+  console.log("taglinks", tagLinks);
+  /* START LOOP: for each found tag link */
+  for (let tagLink of tagLinks) {
+    /* add class active */
+    tagLink.classList.add("active");
+    console.log("tag link", tagLink);
+  } /* END LOOP: for each found tag link */
+  generateTitleLinks('[data-tags~="' + tag + '"]');
+  /* execute function "generateTitleLinks" with article selector as argument */
+}
+
 function generateTags() {
   /* [NEW] create a new variable allTags with an empty array */
   let allTags = {};
@@ -135,9 +176,12 @@ function generateTags() {
     console.log(articleTagsArray);
     /* START LOOP: for each tag */
     for (let tag of articleTagsArray) {
+      const linkHTMLData = { title: tag };
+      console.log("link HTML", linkHTMLData);
+      const linkHTML = templates.tagLink(linkHTMLData);
       /* generate HTML of the link */
-      const linkHTML = `<li><a href="#tag-${tag}">${tag}</a></li>`;
-      console.log(linkHTML);
+      // const linkHTML = `<li><a href="#tag-${tag}">${tag}</a></li>`;
+      // console.log(linkHTML);
       /* add generated code to html variable */
       html = html + linkHTML;
       console.log(html);
@@ -192,59 +236,28 @@ function generateTags() {
 
 generateTags();
 
+// function addClickListenersToTags() {
+//   /* find all links to tags */
+//   const tagLinks = document.querySelectorAll(".post-tags .list a");
+//   console.log("listener", tagLinks);
+//   /* START LOOP: for each link */
+//   for (let tagLink of tagLinks) {
+//     console.log(tagLink, "tagLink");
+//     /* add tagClickHandler as event listener for that link */
+//     tagLink.addEventListener("click", tagClickHandler);
+//   } /* END LOOP: for each link */
+// }
+//addClickListenersToTags();
+const tagLinks = document.querySelectorAll(".post-tags .list a");
+console.log("listener", tagLinks);
+/* START LOOP: for each link */
+for (let tagLink of tagLinks) {
+  console.log(tagLink, "tagLink");
+  /* add tagClickHandler as event listener for that link */
+  tagLink.addEventListener("click", tagClickHandler);
+} /* END LOOP: for each link */
+
 //wszystko dziala do tego momentu. co ma na celu to klikniecie w tag?  jak ma zachowac sie przegladarka? ma przeszukac wszystkie artykuly, sprawdzic czy sa tam takie same tagi, jak ten klikniety, i pokazac po lewej stronie zawezona liste artykulow? prosze Cie, zebys mi przeslal mi te fragmenty kodu z Twoimi komentarzami pod okreslonymi linijkami.
-
-function tagClickHandler(event) {
-  /* prevent default action for this event */
-  event.preventDefault();
-  /* make new constant named "clickedElement" and give it the value of "this" */
-  const clickedElement = this;
-  console.log("tag clickedElement", clickedElement);
-  /* make a new constant "href" and read the attribute "href" of the clicked element */
-  const href = clickedElement.getAttribute("href");
-  console.log("taghref", href);
-  /* make a new constant "tag" and extract tag from the "href" constant */
-  const tag = href.replace("#tag-", "");
-  console.log("tag", tag);
-  //ok i co ja robie z tym golym tagiem?
-
-  /* find all tag links with class active */
-
-  const activeTags = document.querySelectorAll('a.active[href^="#tag-"]');
-  console.log("active tags:", activeTags);
-  /* START LOOP: for each active tag link */
-  for (let activeTag of activeTags) {
-    console.log("active tag:", activeTag);
-    /* remove class active */
-    activeTag.classList.remove("active");
-  } /* END LOOP: for each active tag link */
-
-  /* find all tag links with "href" attribute equal to the "href" constant */
-  const tagLinks = document.querySelectorAll('a[href="' + href + '"]');
-  console.log("taglinks", tagLinks);
-  /* START LOOP: for each found tag link */
-  for (let tagLink of tagLinks) {
-    /* add class active */
-    tagLink.classList.add("active");
-    console.log("tag link", tagLink);
-  } /* END LOOP: for each found tag link */
-  generateTitleLinks('[data-tags~="' + tag + '"]');
-  /* execute function "generateTitleLinks" with article selector as argument */
-}
-
-function addClickListenersToTags() {
-  /* find all links to tags */
-  const tagLinks = document.querySelectorAll(".post-tags .list a");
-  console.log("listener", tagLinks);
-  /* START LOOP: for each link */
-  for (let tagLink of tagLinks) {
-    console.log(tagLink, "tagLink");
-    /* add tagClickHandler as event listener for that link */
-    tagLink.addEventListener("click", tagClickHandler);
-  } /* END LOOP: for each link */
-}
-
-addClickListenersToTags();
 
 function calculateAuthorParams(authors) {
   const params = { max: 0, min: 999999 };
