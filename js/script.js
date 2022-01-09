@@ -9,6 +9,12 @@ const templates = {
   tagLink: Handlebars.compile(
     document.querySelector("#template-tag-link").innerHTML
   ),
+  authorCloudLink: Handlebars.compile(
+    document.querySelector("#template-author-cloud-link").innerHTML
+  ),
+  authorLink: Handlebars.compile(
+    document.querySelector("#template-author-link").innerHTML
+  ),
 };
 
 function titleClickHandler(event) {
@@ -269,6 +275,22 @@ function calculateAuthorParams(authors) {
 
   return params;
 }
+function authorClickHandler(event) {
+  event.preventDefault();
+  const clickedElement = this;
+  console.log("author clickedElement", clickedElement);
+  const href = clickedElement.getAttribute("href");
+  console.log("author href", href);
+
+  const author = href.replace("#author-", "");
+  console.log("author", author);
+  const tagLinks = document.querySelectorAll('a.active[href^="#author-"]');
+  for (let tagLink of tagLinks) {
+    /* remove class active */
+    authorLink.classList.remove("active");
+  }
+  generateTitleLinks('[data-author="' + author + '"]');
+}
 
 function generateAuthors() {
   /*new*/
@@ -282,8 +304,10 @@ function generateAuthors() {
 
     const authorData = article.getAttribute("data-author");
     console.log("author data", authorData);
-    const authorLink = `by <a href="#author-${authorData}"><span>${authorData}</span></a>`;
-    console.log("author link", authorLink);
+    const linkHTMLData = { title: authorData };
+    const authorLink = templates.authorLink(linkHTMLData);
+    // const authorLink = `by <a href="#author-${authorData}"><span>${authorData}</span></a>`;
+    // console.log("author link", authorLink);
     /*new zlicza mi prawidlowo autorow*/
     if (!allAuthors[authorData]) {
       allAuthors[authorData] = 1;
@@ -305,37 +329,27 @@ function generateAuthors() {
   let allAuthorsHTML = "";
   /*NEW*/
   for (let authorData in allAuthors) {
-    allAuthorsHTML +=
-      '<a class="' +
-      calculateTagClass(allAuthors[authorData], authorsParams) +
-      '" href="#author-' +
-      authorData +
-      '">' +
-      authorData +
-      " </a>";
+    allAuthorsData = { authors: [] };
+    allAuthorsData.authors.push({
+      author: authorData,
+      className: calculateTagClass(allAuthors[authorData], authorsParams),
+    });
+    // allAuthorsHTML +=
+    //   '<a class="' +
+    //   calculateTagClass(allAuthors[authorData], authorsParams) +
+    //   '" href="#author-' +
+    //   authorData +
+    //   '">' +
+    //   authorData +
+    //   " </a>";
   }
-  authorList.innerHTML = allAuthorsHTML;
-  //co tu nie gra. nobi w konsoli jest a na stronie sie nie wyswietla
-  console.log("all authors html", allAuthorsHTML);
+  authorList.innerHTML = templates.authorCloudLink(allAuthorsData);
+  // authorList.innerHTML = allAuthorsHTML;
+  // //co tu nie gra. nobi w konsoli jest a na stronie sie nie wyswietla
+  // console.log("all authors html", allAuthorsHTML);
 }
 generateAuthors();
 
-function authorClickHandler(event) {
-  event.preventDefault();
-  const clickedElement = this;
-  console.log("author clickedElement", clickedElement);
-  const href = clickedElement.getAttribute("href");
-  console.log("author href", href);
-
-  const author = href.replace("#author-", "");
-  console.log("author", author);
-  const tagLinks = document.querySelectorAll('a.active[href^="#author-"]');
-  for (let tagLink of tagLinks) {
-    /* remove class active */
-    authorLink.classList.remove("active");
-  }
-  generateTitleLinks('[data-author="' + author + '"]');
-}
 function addClickListenersToAuthors() {
   /* find all links to auhors */
   const authorLinks = document.querySelectorAll(".post-authors .list a");
