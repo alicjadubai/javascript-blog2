@@ -158,7 +158,7 @@ function generateTags() {
     /* START LOOP: for each tag */
     for (let tag of articleTagsArray) {
       /* generate HTML of the link */
-      const linkHTML = `<li><a href="#tag-${tag}">${tag}</a></li>`;
+      const linkHTML = `<li><a href="#tag-${tag}">${tag}</a></li> `;
       // console.log(linkHTML);
       /* add generated code to html variable */
       html = html + linkHTML;
@@ -184,7 +184,6 @@ function generateTags() {
   let allTagsHTML = "";
   /* [NEW] START LOOOP for each tag in allTags*/
   for (let tag in allTags) {
-    // generalnie tu wychodzi string a nie lista, dodam atrybuty <li> i <href>
     //const tagLinkHTML = '<li>' + calculateTagClass(allTags[tag], tagsParams) + '</li>';
     allTagsHTML +=
       '<a class="' +
@@ -215,9 +214,31 @@ for (let tagLink of tagLinks) {
   tagLink.addEventListener("click", tagClickHandler);
 } /* END LOOP: for each link */
 
-//generate authors. o jakich linkach do autora mowia we wskazowkach. Autora mamy przechwycic z "data-author" i wstawic do <p class="post-author"></p>? gdzie tu jest link? Ostanie polecenie to wykasowanie tego fragmentu kodu <p class="post-author"></p>. to co w takim razie bedzie moim wrapperem? co mam umiescic w zmiennej 'optArtcieAuthorSelector'? co ta funkcja ma na celu? wygenerowanie autora artykulu pod tytulem? czyli handler ma byc przypisany do listy autorow po prawej stronie? jak widzisz, ja w ogole nie rozumiem scenariusza. nie podolam. nie rozumiem tych selektorow
+function calculateAuthorsParams(authors) {
+  const params = { max: 0, min: 999999 };
+  for (let author in authors) {
+    params.max = Math.max(authors[author], params.max);
+    params.min = Math.min(authors[author], params.min);
+    console.log(author + " is used " + authors[author] + " times");
+  }
+
+  return params;
+}
+function calculateAuthorClass(count, params) {
+  const normalizedCount = count - params.min;
+  console.log(normalizedCount);
+  const normalizedMax = params.max - params.min;
+  console.log(normalizedMax);
+  const percentage = normalizedCount / normalizedMax;
+  console.log(percentage);
+  const classNumber = Math.floor(percentage * (optCloudClassCount - 1) + 1);
+  console.log(classNumber);
+  return optCloudClassPrefix + classNumber;
+}
 
 function generateAuthors() {
+  //new
+  let allAuthors = {};
   const articles = document.querySelectorAll(optArticleSelector);
   console.log("authors", articles);
   let html = "";
@@ -226,11 +247,40 @@ function generateAuthors() {
     console.log(authorWrapper);
     const author = article.getAttribute("data-author");
     console.log(author);
+
     const linkHTML = `<a href="#author-${author}">${author}</a>`;
     html = linkHTML;
 
     authorWrapper.innerHTML = html;
     console.log(authorWrapper);
+    if (!allAuthors.hasOwnProperty(author)) {
+      allAuthors[author] = 1;
+    } else {
+      allAuthors[author]++;
+    }
+    let allAuthorsHTML = "";
+    const authorParams = calculateAuthorsParams(allAuthors);
+    for (let author in allAuthors) {
+      const authorsParams = calculateAuthorsParams(allAuthors);
+      //allAuthorsHTML += author + "(" + allAuthors[author] + ")" + " ";
+      allAuthorsHTML +=
+        '<a class="' +
+        calculateAuthorClass(allAuthors[author], authorParams) +
+        '" href="#author-' +
+        author +
+        '">' +
+        author +
+        "(" +
+        allAuthors[author] +
+        ")" +
+        "</a>" +
+        " ";
+    }
+    console.log("allAuthorsHtml", allAuthorsHTML);
+    console.log(allAuthors);
+    const authorList = document.querySelector(optAuthorsListSelector);
+    console.log(authorList);
+    authorList.innerHTML = allAuthorsHTML;
   }
 }
 
