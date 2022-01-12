@@ -158,30 +158,6 @@ for (let tagLink of tagLinks) {
 
 //generate authors. o jakich linkach do autora mowia we wskazowkach. Autora mamy przechwycic z "data-author" i wstawic do <p class="post-author"></p>? gdzie tu jest link? Ostanie polecenie to wykasowanie tego fragmentu kodu <p class="post-author"></p>. to co w takim razie bedzie moim wrapperem? co mam umiescic w zmiennej 'optArtcieAuthorSelector'? co ta funkcja ma na celu? wygenerowanie autora artykulu pod tytulem? czyli handler ma byc przypisany do listy autorow po prawej stronie? jak widzisz, ja w ogole nie rozumiem scenariusza. nie podolam. nie rozumiem tych selektorow
 
-function authorClickHandler(event) {
-  /* prevent default action for this event */
-  event.preventDefault();
-  /* make new constant named "clickedElement" and give it the value of "this" */
-  const clickedElement = this;
-  console.log("author clickedElement", clickedElement);
-  const href = clickedElement.getAttribute("href");
-  console.log("authors href", href);
-  const author = href.replace("#author-", "");
-  console.log(author);
-  const activeAuthors = document.querySelectorAll('a.active[href^="#author-"]');
-  for (let activeAuthor of activeAuthors) {
-    activeAuthor.classList.remove("active");
-  }
-
-  const authorLinks = document.querySelectorAll('a[href="' + href + '"]');
-  console.log(authorLinks);
-  for (let authorLink of authorLinks) {
-    authorLink.classList.add("active");
-  }
-
-  generateTitleLinks('[data-author="' + author + '"]');
-}
-
 function generateAuthors() {
   const articles = document.querySelectorAll(optArticleSelector);
   console.log("authors", articles);
@@ -200,10 +176,50 @@ function generateAuthors() {
 }
 
 generateAuthors();
-function addClickListenersToAuthors() {
-  const authorLink = document.querySelectorAll('a[href^="#author-"]');
-  console.log("listener", authorLink);
-  authorLink.addEventListener("click", authorClickHandler);
-}
 
+function authorClickHandler(event) {
+  /* prevent default action for this event */
+  event.preventDefault();
+  /* make new constant named "clickedElement" and give it the value of "this" */
+  const clickedElement = this;
+  console.log("author clickedElement", clickedElement);
+  const href = clickedElement.getAttribute("href");
+  console.log("authors href", href);
+  /* make a new constant "author" and extract author from the "href" constant */
+  const author = href.replace("#author-", "");
+  console.log(author);
+  /* find all author-links with class active */
+
+  const activeLinks = document.querySelectorAll('a.active[href^="#author-"]');
+  console.log("activeLinks", activeLinks);
+  /* START LOOP: for each active tag link */
+  for (let activeLink of activeLinks) {
+    /* remove class active */
+
+    activeLink.classList.remove("active");
+    console.log("actibe link", activeLink);
+
+    /* END LOOP: for each active tag link */
+  }
+  /* find all tag links with "href" attribute equal to the "href" constant */
+  const authorLinks = document.querySelectorAll('a[href="' + href + '"]');
+  /* START LOOP: for each found tag link */
+  for (let authorLink of authorLinks) {
+    /* add class active */
+    authorLink.classList.add("active");
+    /* END LOOP: for each found tag link */
+  }
+
+  generateTitleLinks('[data-author="' + author + '"]');
+}
+function addClickListenersToAuthors() {
+  /* find all links to tags */
+  const authorLinks = document.querySelectorAll('a[href^="#author-"]');
+  /* START LOOP: for each link */
+  for (let authorLink of authorLinks) {
+    /* add tagClickHandler as event listener for that link */
+    authorLink.addEventListener("click", authorClickHandler);
+    /* END LOOP: for each link */
+  }
+}
 addClickListenersToAuthors();
